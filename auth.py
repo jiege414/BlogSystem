@@ -1,7 +1,4 @@
-"""认证路由文件
-
-本文件包含用户认证相关的路由：注册、登录、登出。
-"""
+"""认证相关路由：注册、登录、登出。"""
 
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
@@ -14,13 +11,7 @@ auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    """
-    用户注册路由
-    
-    处理用户注册请求：
-    - GET: 显示注册表单
-    - POST: 处理注册表单提交，创建新用户
-    """
+    """用户注册。"""
     # 如果用户已登录，重定向到首页
     if current_user.is_authenticated:
         return redirect(url_for('index'))
@@ -51,13 +42,7 @@ def register():
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    """
-    用户登录路由
-    
-    处理用户登录请求：
-    - GET: 显示登录表单
-    - POST: 验证用户凭据并登录
-    """
+    """用户登录（支持 next 重定向）。"""
     # 如果用户已登录，重定向到首页
     if current_user.is_authenticated:
         return redirect(url_for('index'))
@@ -77,7 +62,7 @@ def login():
             # 使用 Flask-Login 登录用户
             login_user(user, remember=True)  # remember=True 表示记住登录状态
             
-            # 获取 next 参数（如果用户访问了需要登录的页面，登录后重定向回去）
+            # next 参数仅允许站内相对路径，避免开放重定向
             next_page = request.args.get('next')
             if not next_page or not next_page.startswith('/'):
                 next_page = url_for('index')
@@ -93,12 +78,7 @@ def login():
 @auth_bp.route('/logout')
 @login_required
 def logout():
-    """
-    用户登出路由
-    
-    登出当前登录的用户并重定向到首页。
-    需要用户已登录（@login_required 装饰器）。
-    """
+    """用户登出。"""
     logout_user()
     flash('您已成功登出。', 'info')
     return redirect(url_for('index'))
