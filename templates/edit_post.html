@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}编辑文章 - Flask 博客系统{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-10 col-lg-8">
+    <div class="card shadow">
+      <div class="card-body">
+        <h2 class="card-title text-center mb-4">编辑文章</h2>
+        
+        <form method="POST" action="{{ url_for('blog.edit_post', post_id=post.id) }}">
+          {{ form.hidden_tag() }}
+          
+          <div class="mb-3">
+            {{ form.title.label(class='form-label') }}
+            {{ form.title(class='form-control') }}
+            {% if form.title.errors %}
+              <div class="text-danger small mt-1">
+                {% for error in form.title.errors %}
+                  <div>{{ error }}</div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          
+          <div class="mb-3">
+            {{ form.body.label(class='form-label') }}
+            {{ form.body(class='form-control') }}
+            {% if form.body.errors %}
+              <div class="text-danger small mt-1">
+                {% for error in form.body.errors %}
+                  <div>{{ error }}</div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a href="{{ url_for('blog.post_detail', post_id=post.id) }}" class="btn btn-secondary me-md-2">取消</a>
+            {{ form.submit(class='btn btn-primary', value='保存修改') }}
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
