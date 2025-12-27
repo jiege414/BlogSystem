@@ -4,7 +4,7 @@
 """
 
 from flask import Flask, render_template
-from extensions import db, login_manager
+from extensions import db, login_manager, csrf
 
 
 def create_app():
@@ -34,6 +34,8 @@ def create_app():
     
     # 初始化登录管理器
     login_manager.init_app(app)
+    # 初始化 CSRF 保护（全局）
+    csrf.init_app(app)
     # 设置登录视图（当用户需要登录时，重定向到这个路由）
     login_manager.login_view = 'auth.login'
     # 设置登录提示消息的类别

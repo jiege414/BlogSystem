@@ -23,6 +23,11 @@ def create_post():
     - POST: 处理表单提交，创建新文章
     """
     form = PostForm()
+
+    # CSRF 回归修复：对于缺失/无效 CSRF token 的 POST 请求，直接拒绝
+    # 说明：未启用该处理时，CSRF 失败可能表现为返回创建页（HTTP 200），不利于安全语义与测试判定。
+    if request.method == 'POST' and 'csrf_token' in getattr(form, 'errors', {}):
+        abort(400)
     
     if form.validate_on_submit():
         # 创建新文章

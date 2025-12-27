@@ -236,7 +236,7 @@
 - 测试结论：功能正常，符合预期
 
 #### TC-SEC-001: CSRF保护 - 创建文章
-- 状态：失败
+- 状态：失败（已修复，回归通过）
 - 测试数据：
   - 账号：已登录用户（otheruser）
   - 请求：POST /blog/create
@@ -246,12 +246,14 @@
   - 表单包含CSRF token（hidden字段）
   - 不包含token的请求未被拒绝（HTTP/1.1 200 OK，返回创建文章页面）
   - 不显示CSRF验证错误
-- 测试截图：`screenshots/TC-SEC-001-WRONG.png`
+- 测试截图：`screenshots/TC-SEC-001-FAIL.png`
 - 测试结论：
   - 创建文章接口未对缺失CSRF token的POST请求进行拦截，CSRF保护未生效，不符合预期，需要完善CSRF验证机制。
+- 回归结果（修复后）：
+  - 缺失 csrf_token 的 POST /blog/create 请求被拒绝（HTTP 400），文章不会被创建
 
 #### TC-SEC-002: CSRF保护 - 删除文章
-- 状态：失败
+- 状态：失败（已修复，回归通过）
 - 测试数据：
   - 账号：已登录作者用户(testuser)
   - 文章ID：5
@@ -260,9 +262,11 @@
 - 实际结果：
   - 删除请求未被拒绝（HTTP 302 重定向到 /）
   - 文章被成功删除（再次访问详情页显示不存在/404）
-- 测试截图：`screenshots/TC-SEC-002-WRONG.png`
+- 测试截图：`screenshots/TC-SEC-002-FAIL.png`
 - 测试结论：
   - 删除文章接口未对缺失/无效 CSRF token 的请求进行拦截，CSRF 保护未生效，存在安全风险，不符合预期，需要修复。
+- 回归结果（修复后）：
+  - 缺失 csrf_token 的 POST /blog/post/5/delete 请求被拒绝（HTTP 400），文章不会被删除
 
 #### TC-SEC-003: 密码安全 - 密码哈希存储
 - 状态：通过

@@ -6,10 +6,11 @@
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_wtf import CSRFProtect
 
 # 创建数据库实例（在应用工厂中初始化）
 db = SQLAlchemy()
 
 # 创建登录管理器实例（在应用工厂中初始化）
 login_manager = LoginManager()
-
+csrf = CSRFProtect()    
