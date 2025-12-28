@@ -33,6 +33,21 @@ python -m pip install -r requirements.txt## 测试与文档
 - `docs/BUG_REPORTS.md`（缺陷报告）
 - `docs/screenshots/`（用例执行与缺陷截图）
 
+### 方式 2：Linux/macOS 启动
+进入项目目录
+cd BlogSystem
+
+创建并激活虚拟环境
+python3 -m venv .venv
+source .venv/bin/activate
+
+安装依赖
+pip install -r requirements.txt
+
+启动应用（推荐用 python app.py，确保会自动创建表）
+python app.py> 启动后访问：http://127.0.0.1:5000  
+> 退出虚拟环境：`deactivate`
+
 ## 测试重点
 - 认证与重定向：登录 next 参数处理与站内跳转校验
 - 权限控制：仅作者可编辑/删除文章（403/404 等异常流验证）
