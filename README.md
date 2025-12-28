@@ -14,26 +14,22 @@
 - 表单与 CSRF：Flask-WTF
 
 ## 快速开始（本地运行）
+
 ### 方式 1：Windows 一键启动（推荐）
 双击运行：
 - `run.bat`
 
 或在 PowerShell / CMD 中执行：sh
-.\run.bat### 方式 2：命令行启动（.venv）
+.\run.bat
+### 方式 2：命令行启动（.venv）
 在项目根目录执行：ash
-.\.venv\Scripts\python.exe app.py启动后访问：
+.\.venv\Scripts\python.exe app.py
+启动后访问：
 - http://127.0.0.1:5000
 
-> 依赖安装：sh
-python -m pip install -r requirements.txt## 测试与文档
-本项目包含测试计划、测试用例、缺陷报告与执行截图，见：
-- `docs/TESTPLAN.md`（测试计划）
-- `docs/TESTCASES.md`（测试用例）
-- `docs/MANUAL_TESTING.md`（手工测试记录）
-- `docs/BUG_REPORTS.md`（缺陷报告）
-- `docs/screenshots/`（用例执行与缺陷截图）
-
-### 方式 2：Linux/macOS 启动
+> 依赖安装（首次运行前执行）：sh
+python -m pip install -r requirements.txt
+### 方式 3：Linux/macOS 启动
 进入项目目录
 cd BlogSystem
 
@@ -45,14 +41,27 @@ source .venv/bin/activate
 pip install -r requirements.txt
 
 启动应用（推荐用 python app.py，确保会自动创建表）
-python app.py> 启动后访问：http://127.0.0.1:5000  
+python app.py
+> 启动后访问：http://127.0.0.1:5000  
 > 退出虚拟环境：`deactivate`
 
-## 测试重点
-- 认证与重定向：登录 next 参数处理与站内跳转校验
-- 权限控制：仅作者可编辑/删除文章（403/404 等异常流验证）
-- 安全测试（CSRF）：覆盖创建/修改/删除等关键操作的 CSRF 校验与回归验证
-- 工程可复现：requirements + 启动脚本（.venv/run.bat）保证环境一致性
+## 测试与文档
+本项目包含测试计划、测试用例、缺陷报告与执行截图，见：
+- `docs/TESTPLAN.md`（测试计划）
+- `docs/TESTCASES.md`（测试用例）
+- `docs/MANUAL_TESTING.md`（手工测试记录）
+- `docs/BUG_REPORTS.md`（缺陷报告）
+- `docs/screenshots/`（用例执行与缺陷截图）
+
+## 测试覆盖与产出
+- 用例规模：手工测试用例 **56 条**，覆盖认证、文章、权限、异常流与安全场景
+- 覆盖模块：
+  - 认证与重定向：登录 next 参数处理与站内跳转校验（防开放重定向）
+  - 权限控制：仅作者可编辑/删除文章（403/404 等异常流验证）
+  - 安全测试（CSRF）：覆盖创建/修改/删除等关键操作的 CSRF 校验与回归验证
+- 缺陷与改进：
+  - 发现并推动修复 **3 个问题/风险点**（含 CSRF 相关安全语义优化与回归验证）
+  - 通过文档化（测试计划/用例/缺陷/截图）形成可追溯的测试闭环
 
 ## 目录结构
 - `app.py`：应用入口与应用工厂
