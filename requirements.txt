@@ -5,3 +5,4 @@ Flask-Login==0.6.2
 Flask-WTF==1.2.1
 Werkzeug==2.3.7
 email_validator==2.3.0
+pytest==8.3.4
