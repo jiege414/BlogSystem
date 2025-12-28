@@ -19,15 +19,15 @@
 双击运行：
 - `run.bat`
 
-或在 PowerShell / CMD 中执行：sh
+或在 PowerShell / CMD 中执行：
 .\run.bat
 ### 方式 2：命令行启动（.venv）
-在项目根目录执行：ash
+在项目根目录执行：
 .\.venv\Scripts\python.exe app.py
 启动后访问：
 - http://127.0.0.1:5000
 
-> 依赖安装（首次运行前执行）：sh
+> 依赖安装（首次运行前执行）：
 python -m pip install -r requirements.txt
 ### 方式 3：Linux/macOS 启动
 进入项目目录
@@ -62,6 +62,12 @@ python app.py
 - 缺陷与改进：
   - 发现并推动修复 **3 个问题/风险点**（含 CSRF 相关安全语义优化与回归验证）
   - 通过文档化（测试计划/用例/缺陷/截图）形成可追溯的测试闭环
+
+## 自动化测试（pytest）
+- 安装（首次运行前执行）
+python -m pip install pytest
+- 运行：
+python -m pytest -q
 
 ## 目录结构
 - `app.py`：应用入口与应用工厂
