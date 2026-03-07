@@ -4,7 +4,13 @@
 
 {% block content %}
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3 mb-0">最新文章</h1>
+    <h1 class="h3 mb-0">
+      {% if search_query %}
+        "{{ search_query }}" 的搜索结果
+      {% else %}
+        最新文章
+      {% endif %}
+    </h1>
     {% if current_user.is_authenticated %}
       <a href="{{ url_for('blog.create_post') }}" class="btn btn-primary">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16" style="vertical-align: -0.125em;">
@@ -43,11 +49,16 @@
     </div>
   {% else %}
     <div class="text-center py-5">
-      <p class="text-muted mb-3">还没有任何文章</p>
-      {% if current_user.is_authenticated %}
-        <a href="{{ url_for('blog.create_post') }}" class="btn btn-primary">创建第一篇文章</a>
+      {% if search_query %}
+        <p class="text-muted mb-3">没有找到标题包含 "{{ search_query }}" 的文章</p>
+        <a href="{{ url_for('index') }}" class="btn btn-outline-primary">返回全部文章</a>
       {% else %}
-        <p class="text-muted">请先 <a href="{{ url_for('auth.login') }}">登录</a> 后创建文章</p>
+        <p class="text-muted mb-3">还没有任何文章</p>
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('blog.create_post') }}" class="btn btn-primary">创建第一篇文章</a>
+        {% else %}
+          <p class="text-muted">请先 <a href="{{ url_for('auth.login') }}">登录</a> 后创建文章</p>
+        {% endif %}
       {% endif %}
     </div>
   {% endif %}

@@ -5,7 +5,7 @@
 
 import os
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 from extensions import csrf, db, login_manager
 
@@ -17,11 +17,19 @@ def create_app():
     # 确保 instance 文件夹存在
     os.makedirs(app.instance_path, exist_ok=True)
 
-    # 基础配置 - 使用绝对路径，避免工作目录问题
-    db_path = os.path.join(app.instance_path, "blog.db")
+    # 数据库配置：生产环境用 PostgreSQL，本地用 SQLite
+    database_url = os.environ.get('DATABASE_URL')
+    if database_url:
+        # Render 提供的 PostgreSQL（需要替换协议）
+        db_url = database_url.replace('postgres://', 'postgresql://')
+    else:
+        # 本地开发用 SQLite
+        db_path = os.path.join(app.instance_path, "blog.db")
+        db_url = f"sqlite:///{db_path}"
+
     app.config.from_mapping(
-        SECRET_KEY="dev-secret-key-change-in-production",
-        SQLALCHEMY_DATABASE_URI=f"sqlite:///{db_path}",
+        SECRET_KEY=os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production'),
+        SQLALCHEMY_DATABASE_URI=db_url,
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
     )
 
@@ -53,8 +61,15 @@ def create_app():
 
     @app.route("/")
     def index():
-        posts = Post.query.order_by(Post.timestamp.desc()).all()
-        return render_template("index.html", posts=posts)
+        search_query = request.args.get('q', '').strip()
+        if search_query:
+            # 模糊查询标题
+            posts = Post.query.filter(
+                Post.title.contains(search_query)
+            ).order_by(Post.timestamp.desc()).all()
+        else:
+            posts = Post.query.order_by(Post.timestamp.desc()).all()
+        return render_template("index.html", posts=posts, search_query=search_query)
 
     @app.cli.command("init-db")
     def init_db_command():

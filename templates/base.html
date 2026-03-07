@@ -19,8 +19,17 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
+          <ul class="navbar-nav ms-auto align-items-center">
             {% if current_user.is_authenticated %}
+              <li class="nav-item me-3">
+                <form class="d-flex" action="{{ url_for('index') }}" method="GET">
+                  <input class="form-control form-control-sm" type="search" name="q" 
+                         placeholder="输入文章标题进行搜索" aria-label="搜索"
+                         value="{{ search_query if search_query else '' }}"
+                         style="width: 200px;">
+                  <button class="btn btn-outline-light btn-sm ms-2" type="submit">搜索</button>
+                </form>
+              </li>
               <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('blog.create_post') }}">创建文章</a>
               </li>

@@ -13,6 +13,12 @@
 - 认证：Flask-Login
 - 表单与 CSRF：Flask-WTF
 
+## 数据库说明
+- **类型**：SQLite（文件型数据库，无需单独安装）
+- **位置**：`instance/blog.db`（应用首次运行时自动创建）
+- **查看方式**：1、使用 DB Browser for SQLite 等工具打开 `instance/blog.db`
+              2、或者在命令行中执行 `python show_form_content.py` 查看所有表数据；执行`python show_schema.py`查看数据库建表语句。
+
 ## 快速开始（本地运行）
 
 ### 方式 1：Windows 一键启动（推荐）
