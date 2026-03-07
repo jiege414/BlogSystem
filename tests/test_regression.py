@@ -416,3 +416,90 @@ def test_delete_other_user_post_returns_403(client, app):
     with app.app_context():
         post = Post.query.get(post_id)
         assert post is not None
+
+
+# ==================== 文章搜索测试 ====================
+
+def test_search_post_with_results(client, app):
+    """TC-POST-019: 搜索文章 - 正常搜索"""
+    # 创建用户和文章
+    with app.app_context():
+        user = User(username="searchuser", email="search@test.com")
+        user.set_password("123456")
+        db.session.add(user)
+        db.session.commit()
+
+        post1 = Post(title="Python Tutorial", body="Content 1", user_id=user.id)
+        post2 = Post(title="Flask Guide", body="Content 2", user_id=user.id)
+        db.session.add_all([post1, post2])
+        db.session.commit()
+
+    # 搜索包含"Python"的文章
+    resp = client.get("/?q=Python")
+    assert resp.status_code == 200
+    html = resp.get_data(as_text=True)
+
+    # 应显示搜索结果标题
+    assert "Python" in html
+    assert "Python Tutorial" in html
+    # 不应显示不匹配的文章
+    assert "Flask Guide" not in html
+
+
+def test_search_post_no_results(client):
+    """TC-POST-020: 搜索文章 - 无结果"""
+    resp = client.get("/?q=XYZ123NOTEXIST")
+    assert resp.status_code == 200
+    html = resp.get_data(as_text=True)
+
+    # 应显示无结果提示
+    assert "没有找到标题包含" in html
+    assert "XYZ123NOTEXIST" in html
+    # 应显示返回按钮
+    assert "返回全部文章" in html
+
+
+def test_search_post_empty_query(client, app):
+    """TC-POST-021: 搜索文章 - 空搜索"""
+    # 创建文章
+    with app.app_context():
+        user = User(username="emptysearch", email="empty@test.com")
+        user.set_password("123456")
+        db.session.add(user)
+        db.session.commit()
+
+        post = Post(title="Test Article", body="Content", user_id=user.id)
+        db.session.add(post)
+        db.session.commit()
+
+    # 空搜索应显示全部文章
+    resp = client.get("/?q=")
+    assert resp.status_code == 200
+    html = resp.get_data(as_text=True)
+
+    # 应显示"最新文章"标题
+    assert "最新文章" in html
+    # 应显示所有文章
+    assert "Test Article" in html
+
+
+def test_search_post_partial_match(client, app):
+    """TC-POST-022: 搜索文章 - 模糊匹配"""
+    # 创建文章
+    with app.app_context():
+        user = User(username="partialuser", email="partial@test.com")
+        user.set_password("123456")
+        db.session.add(user)
+        db.session.commit()
+
+        post = Post(title="Flask入门教程", body="Content", user_id=user.id)
+        db.session.add(post)
+        db.session.commit()
+
+    # 部分匹配搜索
+    resp = client.get("/?q=Flask")
+    assert resp.status_code == 200
+    html = resp.get_data(as_text=True)
+
+    # 应显示部分匹配的文章
+    assert "Flask入门教程" in html
