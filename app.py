@@ -3,7 +3,9 @@
 使用应用工厂模式创建 app，并初始化扩展（SQLAlchemy / Login / CSRF）。
 """
 
+import logging
 import os
+from logging.handlers import RotatingFileHandler
 
 from flask import Flask, render_template, request
 
@@ -37,6 +39,28 @@ def create_app():
     db.init_app(app)
     login_manager.init_app(app)
     csrf.init_app(app)
+
+    # 配置日志
+    if not app.debug:
+        # 生产环境：写入日志文件
+        log_dir = os.path.join(app.instance_path, 'logs')
+        os.makedirs(log_dir, exist_ok=True)
+        file_handler = RotatingFileHandler(
+            os.path.join(log_dir, 'blog.log'),
+            maxBytes=10240,  # 10KB
+            backupCount=10
+        )
+        file_handler.setFormatter(logging.Formatter(
+            '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+        ))
+        file_handler.setLevel(logging.INFO)
+        app.logger.addHandler(file_handler)
+        app.logger.setLevel(logging.INFO)
+        app.logger.info('博客系统启动')
+    else:
+        # 开发环境：输出到控制台
+        logging.basicConfig(level=logging.DEBUG)
+        app.logger.setLevel(logging.DEBUG)
 
     login_manager.login_view = "auth.login"
     login_manager.login_message = "请先登录以访问此页面。"

@@ -503,3 +503,86 @@ def test_search_post_partial_match(client, app):
 
     # 应显示部分匹配的文章
     assert "Flask入门教程" in html
+
+
+# ==================== 日志验证测试 ====================
+
+def test_create_post_logs_info(client, app, caplog):
+    """TC-LOG-001: 文章创建成功应记录 INFO 级别日志"""
+    # 设置日志级别
+    caplog.set_level("INFO")
+
+    # 创建并登录用户
+    with app.app_context():
+        user = User(username="loguser", email="log@test.com")
+        user.set_password("123456")
+        db.session.add(user)
+        db.session.commit()
+
+    r = client.get("/auth/login")
+    token = _extract_csrf_token(r.get_data(as_text=True))
+    client.post(
+        "/auth/login",
+        data={"csrf_token": token, "username": "loguser", "password": "123456"},
+        follow_redirects=False,
+    )
+
+    # 创建文章
+    r = client.get("/blog/create")
+    token = _extract_csrf_token(r.get_data(as_text=True))
+    client.post(
+        "/blog/create",
+        data={"csrf_token": token, "title": "Log Test Article", "body": "Content"},
+        follow_redirects=False,
+    )
+
+    # 验证日志记录
+    assert "文章创建成功" in caplog.text
+    assert "Log Test Article" in caplog.text
+    assert "loguser" in caplog.text
+
+    # 打印日志内容（用于调试查看）
+    print("\n=== 捕获的日志内容 ===")
+    for record in caplog.records:
+        print(f"{record.levelname}: {record.message}")
+    print("=== 日志结束 ===\n")
+
+
+def test_delete_post_logs_info(client, app, caplog):
+    """TC-LOG-002: 文章删除成功应记录 INFO 级别日志"""
+    caplog.set_level("INFO")
+
+    # 创建用户和文章
+    with app.app_context():
+        user = User(username="delloguser", email="dellog@test.com")
+        user.set_password("123456")
+        db.session.add(user)
+        db.session.commit()
+
+        post = Post(title="Article To Delete", body="Content", user_id=user.id)
+        db.session.add(post)
+        db.session.commit()
+        post_id = post.id
+
+    # 登录
+    r = client.get("/auth/login")
+    token = _extract_csrf_token(r.get_data(as_text=True))
+    client.post(
+        "/auth/login",
+        data={"csrf_token": token, "username": "delloguser", "password": "123456"},
+        follow_redirects=False,
+    )
+
+    # 删除文章
+    r = client.get(f"/blog/post/{post_id}")
+    token = _extract_csrf_token(r.get_data(as_text=True))
+    client.post(
+        f"/blog/post/{post_id}/delete",
+        data={"csrf_token": token},
+        follow_redirects=False,
+    )
+
+    # 验证日志记录
+    assert "文章删除成功" in caplog.text
+    assert "Article To Delete" in caplog.text
+    assert str(post_id) in caplog.text

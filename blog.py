@@ -1,6 +1,6 @@
 """文章相关路由：创建、详情、编辑、删除。"""
 
-from flask import Blueprint, render_template, redirect, url_for, flash, abort, request
+from flask import Blueprint, current_app, render_template, redirect, url_for, flash, abort, request
 from flask_login import login_required, current_user
 from forms import PostForm
 from models import Post, db
@@ -23,10 +23,12 @@ def create_post():
         try:
             db.session.add(post)
             db.session.commit()
+            current_app.logger.info(f'文章创建成功: {post.title}, 作者: {current_user.username}')
             flash('文章发布成功！', 'success')
             return redirect(url_for('index'))
-        except Exception:
+        except Exception as e:
             db.session.rollback()
+            current_app.logger.error(f'文章创建失败: {str(e)}')
             flash('文章发布失败，请稍后重试。', 'danger')
 
     return render_template('create_post.html', form=form, title='创建文章')
@@ -58,14 +60,17 @@ def edit_post(post_id):
         form.body.data = post.body
 
     if form.validate_on_submit():
+        old_title = post.title
         post.title = form.title.data
         post.body = form.body.data
         try:
             db.session.commit()
+            current_app.logger.info(f'文章更新成功: ID={post.id}, 原标题={old_title}, 新标题={post.title}, 作者: {current_user.username}')
             flash('文章更新成功！', 'success')
             return redirect(url_for('blog.post_detail', post_id=post.id))
-        except Exception:
+        except Exception as e:
             db.session.rollback()
+            current_app.logger.error(f'文章更新失败: ID={post.id}, 错误: {str(e)}')
             flash('文章更新失败，请稍后重试。', 'danger')
 
     return render_template('edit_post.html', form=form, post=post, title='编辑文章')
@@ -82,11 +87,14 @@ def delete_post(post_id):
         abort(403)
 
     try:
+        post_title = post.title
         db.session.delete(post)
         db.session.commit()
+        current_app.logger.info(f'文章删除成功: ID={post_id}, 标题={post_title}, 作者: {current_user.username}')
         flash('文章已成功删除。', 'success')
-    except Exception:
+    except Exception as e:
         db.session.rollback()
+        current_app.logger.error(f'文章删除失败: ID={post_id}, 错误: {str(e)}')
         flash('删除文章失败，请稍后重试。', 'danger')
 
     return redirect(url_for('index'))
