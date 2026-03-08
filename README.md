@@ -23,7 +23,33 @@
 - **类型**：SQLite（文件型数据库，无需单独安装）
 - **位置**：`instance/blog.db`（应用首次运行时自动创建）
 - **查看方式**：1、使用 DB Browser for SQLite 等工具打开 `instance/blog.db`
-              2、或者在命令行中执行 `python show_form_content.py` 查看所有表数据；执行`python show_schema.py`查看数据库建表语句。
+              2、或者在命令行中执行 `python scripts/show_form_content.py` 查看所有表数据；执行 `python scripts/show_schema.py` 查看数据库建表语句。
+
+## 初次运行（环境配置）
+
+如果是第一次运行本项目，请按以下步骤配置环境：
+
+```bash
+# 1. 克隆或下载项目后，进入项目目录
+cd BlogSystem
+
+# 2. 创建虚拟环境
+python -m venv .venv
+
+# 3. 激活虚拟环境
+# Windows:
+.\.venv\Scripts\activate
+# Linux/macOS:
+source .venv/bin/activate
+
+# 4. 安装依赖
+pip install -r requirements.txt
+
+# 5. 初始化数据库（可选，应用首次运行时会自动创建）
+flask --app app init-db
+```
+
+完成以上步骤后，即可使用下方的启动方式运行项目。
 
 ## 快速开始（本地运行）
 
@@ -35,25 +61,39 @@
 .\run.bat
 ### 方式 2：命令行启动（.venv）
 在项目根目录执行：
-.\.venv\Scripts\python.exe app.py
+```bash
+.\.venv\Scripts\python.exe run_app.py
+```
+或使用 Flask 命令：
+```bash
+set FLASK_APP=app:create_app
+flask run --debug
+```
 启动后访问：
 - http://127.0.0.1:5000
 
 > 依赖安装（首次运行前执行）：
+```bash
 python -m pip install -r requirements.txt
+```
 ### 方式 3：Linux/macOS 启动
-进入项目目录
+```bash
+# 进入项目目录
 cd BlogSystem
 
-创建并激活虚拟环境
+# 创建并激活虚拟环境
 python3 -m venv .venv
 source .venv/bin/activate
 
-安装依赖
+# 安装依赖
 pip install -r requirements.txt
 
-启动应用（推荐用 python app.py，确保会自动创建表）
-python app.py
+# 启动应用
+python run_app.py
+# 或使用 Flask 命令
+export FLASK_APP=app:create_app
+flask run --debug
+```
 > 启动后访问：http://127.0.0.1:5000  
 > 退出虚拟环境：`deactivate`
 
@@ -84,13 +124,32 @@ python -m pip install pytest
 python -m pytest -q
 
 ## 目录结构
-- `app.py`：应用入口与应用工厂
-- `auth.py`：认证相关路由
-- `blog.py`：文章相关路由
-- `models.py`：数据模型
-- `forms.py`：表单定义
-- `templates/`：页面模板
-- `docs/`：测试文档与截图
+```
+BlogSystem/
+├── app/                    # 应用核心代码
+│   ├── __init__.py        # 应用工厂
+│   ├── auth.py            # 认证蓝图（注册/登录/登出）
+│   ├── blog.py            # 博客蓝图（文章CRUD/搜索）
+│   ├── models.py          # 数据模型（User/Post）
+│   ├── forms.py           # 表单定义
+│   └── extensions.py      # Flask扩展初始化
+├── scripts/               # 工具脚本
+│   ├── run_app.py         # Python启动脚本
+│   ├── check_user.py      # 用户信息检查
+│   ├── show_schema.py     # 数据库结构查看
+│   └── show_form_content.py  # 数据库内容查看
+├── tests/                 # 自动化测试
+│   ├── conftest.py        # pytest配置
+│   ├── test_regression.py # 回归测试
+│   ├── test_permissions.py # 权限测试
+│   └── test_security_csrf.py # CSRF安全测试
+├── templates/             # HTML模板
+├── docs/                  # 测试文档与截图
+├── run.bat                # Windows一键启动
+├── run_app.py             # 根目录启动入口
+├── requirements.txt       # 依赖列表
+└── README.md              # 项目说明
+```
 
 ## 免责声明
 该项目用于学习与测试实践，当前以开发环境方式运行（Flask Debug），不建议直接用于生产环境。

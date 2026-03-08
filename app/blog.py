@@ -2,8 +2,8 @@
 
 from flask import Blueprint, current_app, render_template, redirect, url_for, flash, abort, request
 from flask_login import login_required, current_user
-from forms import PostForm
-from models import Post, db
+from app.forms import PostForm
+from app.models import Post, db
 
 blog_bp = Blueprint('blog', __name__)
 
@@ -98,4 +98,3 @@ def delete_post(post_id):
         flash('删除文章失败，请稍后重试。', 'danger')
 
     return redirect(url_for('index'))
-

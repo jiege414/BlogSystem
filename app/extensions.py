@@ -13,4 +13,4 @@ db = SQLAlchemy()
 
 # 创建登录管理器实例（在应用工厂中初始化）
 login_manager = LoginManager()
-csrf = CSRFProtect()    
+csrf = CSRFProtect()

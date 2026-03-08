@@ -7,14 +7,18 @@ import logging
 import os
 from logging.handlers import RotatingFileHandler
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory
 
-from extensions import csrf, db, login_manager
+from app.extensions import csrf, db, login_manager
 
 
 def create_app():
     """创建并配置 Flask 应用实例（应用工厂）。"""
-    app = Flask(__name__)
+    # 获取当前文件所在目录的父目录（项目根目录）
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    app = Flask(__name__, 
+                template_folder=os.path.join(base_dir, 'templates'),
+                static_folder=os.path.join(base_dir, 'static'))
 
     # 确保 instance 文件夹存在
     os.makedirs(app.instance_path, exist_ok=True)
@@ -68,20 +72,20 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         """Flask-Login 回调：通过用户 ID 加载用户对象。"""
-        from models import User
+        from app.models import User
 
         return User.query.get(int(user_id))
 
     # 注册蓝图
-    from auth import auth_bp
+    from app.auth import auth_bp
 
     app.register_blueprint(auth_bp, url_prefix="/auth")
 
-    from blog import blog_bp
+    from app.blog import blog_bp
 
     app.register_blueprint(blog_bp, url_prefix="/blog")
 
-    from models import Post, User
+    from app.models import Post, User
 
     @app.route("/")
     def index():
@@ -95,9 +99,13 @@ def create_app():
             posts = Post.query.order_by(Post.timestamp.desc()).all()
         return render_template("index.html", posts=posts, search_query=search_query)
 
+    @app.route('/favicon.ico')
+    def favicon():
+        return send_from_directory(os.path.join(base_dir, 'static'), 'favicon.ico',
+                                   mimetype='image/vnd.microsoft.icon')
+
     @app.cli.command("init-db")
     def init_db_command():
         db.create_all()
-        print("Initialized the database.")
 
     return app

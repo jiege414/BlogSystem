@@ -7,8 +7,8 @@ CSRF 安全测试模块
 """
 
 import re
-from models import User, Post
-from extensions import db
+from app.models import User, Post
+from app.extensions import db
 
 
 def _extract_csrf_token(html: str) -> str:

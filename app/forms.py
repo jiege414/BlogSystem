@@ -6,7 +6,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
-from models import User
+from app.models import User
 
 
 class RegistrationForm(FlaskForm):
@@ -103,4 +103,3 @@ class PostForm(FlaskForm):
     )
     
     submit = SubmitField('发布文章', render_kw={'class': 'btn btn-primary'})
-

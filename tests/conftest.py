@@ -9,7 +9,7 @@ import tempfile
 
 import pytest
 
-from extensions import db
+from app.extensions import db
 
 
 @pytest.fixture

@@ -1,5 +1,10 @@
 """显示数据库完整内容（格式化输出）"""
 import sqlite3
+import os
+
+# 获取项目根目录
+current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+db_path = os.path.join(current_dir, 'instance', 'blog.db')
 
 def print_table(title, headers, rows):
     """格式化打印表格"""
@@ -38,7 +43,7 @@ def print_table(title, headers, rows):
 
 
 # 连接数据库
-conn = sqlite3.connect('instance/blog.db')
+conn = sqlite3.connect(db_path)
 cursor = conn.cursor()
 
 # 获取所有表
@@ -46,7 +51,7 @@ cursor.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;
 tables = cursor.fetchall()
 
 print("="*60)
-print("  数据库: instance/blog.db")
+print(f"  数据库: instance/blog.db")
 print(f"  包含表: {', '.join(t[0] for t in tables)}")
 
 # 查看user表

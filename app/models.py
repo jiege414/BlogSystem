@@ -6,12 +6,21 @@
 - Post：文章模型
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from extensions import db
+from app.extensions import db
+
+
+# 北京时间时区 (UTC+8)
+BEIJING_TZ = timezone(timedelta(hours=8))
+
+
+def get_beijing_time():
+    """获取当前北京时间"""
+    return datetime.now(BEIJING_TZ)
 
 
 class User(UserMixin, db.Model):
@@ -54,10 +63,8 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     body = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.now, index=True)
+    timestamp = db.Column(db.DateTime, default=get_beijing_time, index=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
     def __repr__(self) -> str:
         return f"<Post {self.title[:20]}>"
-
-
