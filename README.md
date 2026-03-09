@@ -45,7 +45,7 @@ source .venv/bin/activate
 # 4. 安装依赖
 pip install -r requirements.txt
 
-# 5. 初始化数据库（可选，应用首次运行时会自动创建）
+# 5. 初始化数据库
 flask --app app init-db
 ```
 
